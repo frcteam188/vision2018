@@ -22,13 +22,7 @@ mkvirtualenv -p <PATH TO PYTHON 3> vision2018
 ```
 You can get the path to Python3 using `which python3`
 
-The above line should already activate the environment, in case it did not
-
-- Activate virtualenv
-
-```
-workon vision2018
-```
+The above line should already activate the environment, in case it did not `workon vision2018`
 
 - Install the requirements
 
