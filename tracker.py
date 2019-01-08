@@ -16,77 +16,108 @@ camera = cv2.VideoCapture(0)
 def trackCube():
     
     while(True):
-        (grabbed, frame) = camera.read()
+        (_, frame) = camera.read()
+        process(frame)
+        key = cv2.waitKey(1) & 0xFF
+        if key ==ord("q"):
+            break
+
+def process(frame):
         before = time.time()
         # print(frame.shape)
-        # frame = cv2.resize(frame, (320, 240))
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
+        frame = cv2.resize(frame, (constants.WIDTH, constants.HEIGHT))
+        frame = lower_exposure(frame)
+        # cv2.imshow(frame)
         #sharpen and refine image
-        hsv = cv2.GaussianBlur(hsv, (7, 7), 0)
+        hsv = frame
+        
+        hsv = cv2.erode(hsv, None, iterations=2)
+        hsv = cv2.dilate(hsv, None, iterations=2)
+        hsv = cv2.GaussianBlur(hsv, (3, 3), 1)
 
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # cv2.imshow('BLUR', hsv)
 
         #filter anything based on color
-        green_range = cv2.inRange(hsv, constants.cube_green_lower, constants.cube_green_upper)
-        green_rangeß = cv2.dilate(green_range, None, iterations=2)
-
-        areaArray = []
-       
-        # cv2.imshow('Range', green_range)
-        #will error if unable to get camera feed
+        green_range = cv2.inRange(hsv, constants.green_lower, constants.green_upper)
+        # cv2.imshow('FILTER', green_range)
+        print_latency(before)
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            for c in contours: 
+            rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > 150]
+            matches = find_goals(frame, rects)
+            if matches is not None:
+                write_angles(frame, matches)
+            cv2.drawContours(frame,rects,-1,(0,0,255),2)
             
-                #ignore all small contours
-                if cv2.contourArea(c) < 5000:
-                    Table.putBoolean("ContoursFound", False)
-                    continue 
-                    
-                #first sort the array by area
-                sorteddata = sorted(zip(areaArray, contours), key=lambda x: x[0], reverse=True)
-            
-                #find biggest contour, mark it
-                if len(contours)>0:
-                     green=max(contours, key=cv2.contourArea)
-                     (xg,yg,wg,hg) = cv2.boundingRect(green)
-                     
-                     #draw the rectangle to screen
-                     axOne = cv2.rectangle(frame, (xg,yg), (xg+wg, yg+hg), (0,255,0), 2)
-                
-                CubeData = [xg, yg, wg, hg]
-                CenterOfCube = xg+(wg/2)
-                
-                ImageSizeInDeg = CenterOfCube * constants.DegPerPixel
-                
-                DistanceToCube = ((13/math.tan(math.radians(ImageSizeInDeg))))
-                
-                PixelsToCube = CenterOfCube - 300
-                
-                AngleToCube = ((CenterOfCube - (constants.CameraWidth/2)) * constants.DegPerPixel)
-                
-                # #send data to table
-                Table.putNumber("DistanceToCube", DistanceToCube)
-                Table.putNumber("PixelsToCube", PixelsToCube)
-                Table.putNumberArray("X, Y, W, H", CubeData)
-                Table.putNumber("CenterOfCube", CenterOfCube)
-                Table.putNumber("AngleToCube", AngleToCube)
-                Table.putBoolean("ContoursFound", True)
+            # #send data to table
+            # Table.putNumber("DistanceToCube", DistanceToCube)
+            # Table.putNumber("PixelsToCube", PixelsToCube)
+            # Table.putNumberArray("X, Y, W, H", CubeData)
+            # Table.putNumber("CenterOfCube", CenterOfCube)
+            # Table.putNumber("AngleToCube", AngleToCube)
+            Table.putBoolean("ContoursFound", True)
 
         except IndexError:
             Table.putBoolean("ContoursFound", False)
-        
-        latency = time.time() - before
-        fps = (1/latency)
-        fps_str = '%.2f'%fps
-
-        
-        print('FPS:', fps_str, 'Latency:', latency)
+        print_latency(before)
         cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1) & 0xFF
-        
-        if key ==ord("q"):
-            break
+
+def lower_exposure(image):
+   
+    if image is None:
+        return
+    new_image = np.zeros(image.shape, image.dtype)
+    alpha = 1.0 # Simple contrast control
+    beta = 0    # Simple brightness control
+
+
+    new_image = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+    return new_image
+
+def write_angles(frame, matches):
+    for s1, s2 in matches:
+        match_center = (s1[3][0] + s2[0][0]) / 2
+        camera_center = constants.WIDTH/2
+        angle_to_match = (match_center-camera_center) * constants.DEGREES_PER_PIXEL
+        cv2.putText(frame, "%.2f"%angle_to_match, (int(match_center), s1[3][1]), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
+
+def find_goals(frame, rects):
+    if len(rects) < 2:
+        return None
+    matches = []
+    for r1 in rects:
+        s1 = sorted(r1, key=lambda x: x[0])
+        a1 = get_angle(s1)
+        for r2 in rects:
+            if r2 is not r1:
+                s2 = sorted(r2, key=lambda x: x[0])
+                a2 = get_angle(s2)
+                # print('here')
+                # check s1 to the left of s2, and both at same height
+                if (s1[0][0] < s2[0][0] and abs(s1[3][1] - s2[0][1]) < 50):
+                    # check a1 reflects a2 along the vertical (within a threshold)
+                    
+                    if a2 > a1 and a1 != 0 and a2/a1 < 0 and abs(a2 + a1) < constants.ANGLE_THRESHOLD:
+                        matches.append((s1, s2))
+                        cv2.line(frame, tuple(s1[3]), tuple(s2[0]), (0, 255, 0), 3)
+    return matches
+            # print(angle, angle+90%360)
+    return frame
+
+def get_angle(rect):
+    p1, p2 = rect[0], rect[1]
+    opposite = p2[0] - p1[0]
+    adjacent = p2[1] - p1[1]
+    angle = (math.atan(opposite/adjacent) * 180)/math.pi
+    return angle
+
+def print_latency(before):
+    latency = time.time() - before
+    fps = (1/latency)
+    fps_str = '%.2f'%fps
+    print('FPS:', fps_str, 'Latency:', latency)
 if __name__ == '__main__':
     trackCube()
+    # process(cv2.imread('vision_sample.png'))
+    # cv2.waitKey(0)
