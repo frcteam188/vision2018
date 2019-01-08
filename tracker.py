@@ -11,7 +11,8 @@ logging.basicConfig(level=logging.DEBUG)
 NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(1)
+camera.set(cv2.CAP_PROP_EXPOSURE, -100)
 
 def trackCube():
     
