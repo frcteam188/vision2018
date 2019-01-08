@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
-camera = cv2.VideoCapture(1)
+camera = cv2.VideoCapture(0)
 camera.set(cv2.CAP_PROP_EXPOSURE, -100)
 
 def trackCube():
@@ -87,21 +87,27 @@ def find_goals(frame, rects):
     if len(rects) < 2:
         return None
     matches = []
-    for r1 in rects:
-        s1 = sorted(r1, key=lambda x: x[0])
+    matched = {}
+    rects = [sorted(rect, key=lambda x: x[0]) for rect in rects]
+    rects = sorted(rects,  key=lambda x: x[0][0])
+    for s1 in rects:
+        # s1 = sorted(r1, key=lambda x: x[0])
         a1 = get_angle(s1)
-        for r2 in rects:
-            if r2 is not r1:
-                s2 = sorted(r2, key=lambda x: x[0])
+        for s2 in rects:
+            if s2 is not s1:
+                # s2 = sorted(r2, key=lambda x: x[0])
                 a2 = get_angle(s2)
                 # print('here')
                 # check s1 to the left of s2, and both at same height
                 if (s1[0][0] < s2[0][0] and abs(s1[3][1] - s2[0][1]) < 50):
                     # check a1 reflects a2 along the vertical (within a threshold)
-                    
                     if a2 > a1 and a1 != 0 and a2/a1 < 0 and abs(a2 + a1) < constants.ANGLE_THRESHOLD:
-                        matches.append((s1, s2))
-                        cv2.line(frame, tuple(s1[3]), tuple(s2[0]), (0, 255, 0), 3)
+                        if s1 not in matched and s2 not in matched:
+                            match = (s1, s2)
+                            matched[s1] = match
+                            matched[s2] = match
+                            matches.append(match)
+                            cv2.line(frame, tuple(s1[3]), tuple(s2[0]), (0, 255, 0), 3)
     return matches
             # print(angle, angle+90%360)
     return frame
