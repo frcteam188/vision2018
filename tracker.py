@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.DEBUG)
 NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
-camera = cv2.VideoCapture(0)
-camera.set(cv2.CAP_PROP_EXPOSURE, -100)
+camera = cv2.VideoCapture(1)
+camera.set(cv2.CAP_PROP_EXPOSURE, -65)
 
 def trackCube():
     
@@ -102,10 +102,10 @@ def find_goals(frame, rects):
                 if (s1[0][0] < s2[0][0] and abs(s1[3][1] - s2[0][1]) < 50):
                     # check a1 reflects a2 along the vertical (within a threshold)
                     if a2 > a1 and a1 != 0 and a2/a1 < 0 and abs(a2 + a1) < constants.ANGLE_THRESHOLD:
-                        if s1 not in matched and s2 not in matched:
+                        if str(s1) not in matched and str(s2) not in matched:
                             match = (s1, s2)
-                            matched[s1] = match
-                            matched[s2] = match
+                            matched[str(s1)] = match
+                            matched[str(s2)] = match
                             matches.append(match)
                             cv2.line(frame, tuple(s1[3]), tuple(s2[0]), (0, 255, 0), 3)
     return matches
