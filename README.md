@@ -1,31 +1,24 @@
-# vision2018
+# vision2019
 
-temporary testing repo for vision, will delete sooner or later
+Team 188's vision code for 2019
 
 # Requirements
-This project is meant to be run with virtualenv it should work fine without it however it is reccomended you install it.
-Easiest way is to follow the instructions [here](https://github.com/brainsik/virtualenv-burrito)
-Or just run the line below.
-```
-curl -sL https://raw.githubusercontent.com/brainsik/virtualenv-burrito/master/virtualenv-burrito.sh | $SHELL
-```
+- A Raspberry Pi (preferably running Raspbian Stretch)
 
 # Setup
 
+-  Follow [this](https://www.pyimagesearch.com/2017/09/04/raspbian-stretch-install-opencv-3-python-on-your-raspberry-pi/) tutorial to install OpenCV on your Pi (use Python3, as the code is written for Python3)
+
 - Clone the repo
-
-- Setup virtualenv
-
 ```
-cd vision2018
-mkvirtualenv -p <PATH TO PYTHON 3> vision2018
+git clone https://github.com/frcteam188/vision2019.git
 ```
-You can get the path to Python3 using `which python3`
-
-The above line should already activate the environment, in case it did not `workon vision2018`
 
 - Install the requirements
 
 ```
 pip install -r requirements.txt
 ```
+
+# Credits
+Original Code is based off of YCSRobotics [2017 Vision Code](https://github.com/YCSRobotics/FRC-Grizzly-Tracker/blob/master/tracker.py)
