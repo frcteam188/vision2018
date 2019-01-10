@@ -18,12 +18,12 @@ def trackCube():
     
     while(True):
         (_, frame) = camera.read()
-        process(frame)
+        detect_goals(frame)
         key = cv2.waitKey(1) & 0xFF
         if key ==ord("q"):
             break
 
-def process(frame):
+def detect_goals(frame):
         before = time.time()
         # print(frame.shape)
         frame = cv2.resize(frame, (constants.WIDTH, constants.HEIGHT))
@@ -42,7 +42,7 @@ def process(frame):
         #filter anything based on color
         green_range = cv2.inRange(hsv, constants.green_lower, constants.green_upper)
         # cv2.imshow('FILTER', green_range)
-        print_latency(before)
+        # print_latency(before)
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > 150]
@@ -61,8 +61,9 @@ def process(frame):
 
         except IndexError:
             Table.putBoolean("ContoursFound", False)
-        print_latency(before)
-        cv2.imshow("Frame", frame)
+        # print_latency(before)
+        # cv2.imshow("Frame", frame)
+        return frame
 
 def lower_exposure(image):
    
@@ -126,5 +127,5 @@ def print_latency(before):
     print('FPS:', fps_str, 'Latency:', latency)
 if __name__ == '__main__':
     trackCube()
-    # process(cv2.imread('vision_sample.png'))
+    # detect_goals(cv2.imread('vision_sample.png'))
     # cv2.waitKey(0)
