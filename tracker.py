@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.DEBUG)
 NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
-camera = cv2.VideoCapture(1)
-camera.set(cv2.CAP_PROP_EXPOSURE, -65)
+# camera = cv2.VideoCapture(0)
+#camera.set(cv2.CAP_PROP_EXPOSURE, -65)
 
 def trackCube():
     
@@ -27,7 +27,6 @@ def detect_goals(frame):
         before = time.time()
         # print(frame.shape)
         frame = cv2.resize(frame, (constants.WIDTH, constants.HEIGHT))
-        frame = lower_exposure(frame)
         # cv2.imshow(frame)
         #sharpen and refine image
         hsv = frame
