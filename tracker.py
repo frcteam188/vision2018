@@ -59,7 +59,8 @@ def detect_goals(frame):
         except IndexError:
             Table.putBoolean("ContoursFound", False)
         # print_latency(before)
-        # cv2.imshow("Frame", frame)
+        if camera is not None:
+            cv2.imshow("Frame", frame)
         return frame
 
 def lower_exposure(image):
