@@ -77,11 +77,16 @@ def get_angle_to_match(match):
     s1, s2 = match
     match_center = (s1[3][0] + s2[0][0]) / 2
     camera_center = constants.WIDTH/2
-    return (match_center-camera_center) * constants.DEGREES_PER_PIXEL
+    return 
 
 def write_angles(frame, matches):
     for s1, s2 in matches:
-        angle_to_match = get_angle_to_match((s1, s2))
+        
+        s1, s2 = match
+        match_center = (s1[3][0] + s2[0][0]) / 2
+        camera_center = constants.WIDTH/2
+        angle_to_match = (match_center-camera_center) * constants.DEGREES_PER_PIXEL
+        
         cv2.putText(frame, "%.2f"%angle_to_match, (int(match_center), s1[3][1]), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
 
 def find_goals(frame, rects):
