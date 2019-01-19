@@ -11,7 +11,8 @@ logging.basicConfig(level=logging.DEBUG)
 NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
-camera = cv2.VideoCapture(0)
+camera = None
+
 
 def trackCube():
     
@@ -124,6 +125,7 @@ def print_latency(before):
     fps_str = '%.2f'%fps
     print('FPS:', fps_str, 'Latency:', latency)
 if __name__ == '__main__':
+    camera = cv2.VideoCapture(0)
     trackCube()
     # detect_goals(cv2.imread('vision_sample.png'))
     # cv2.waitKey(0)
