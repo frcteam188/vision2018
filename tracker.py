@@ -11,8 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
-# camera = cv2.VideoCapture(0)
-#camera.set(cv2.CAP_PROP_EXPOSURE, -65)
+camera = cv2.VideoCapture(0)
 
 def trackCube():
     
@@ -44,19 +43,15 @@ def detect_goals(frame):
         # print_latency(before)
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
             rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > 150]
             matches = find_goals(frame, rects)
             if matches is not None:
                 write_angles(frame, matches)
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
-            
-            # #send data to table
-            # Table.putNumber("DistanceToCube", DistanceToCube)
-            # Table.putNumber("PixelsToCube", PixelsToCube)
-            # Table.putNumberArray("X, Y, W, H", CubeData)
-            # Table.putNumber("CenterOfCube", CenterOfCube)
-            # Table.putNumber("AngleToCube", AngleToCube)
-            Table.putBoolean("ContoursFound", True)
+
+            for match, i in enumerate(matches):
+                Table.putNumber("goal:%d"%i, get_angle_to_match(match))
 
         except IndexError:
             Table.putBoolean("ContoursFound", False)
@@ -76,11 +71,15 @@ def lower_exposure(image):
     new_image = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
     return new_image
 
+def get_angle_to_match(match):
+    s1, s2 = match
+    match_center = (s1[3][0] + s2[0][0]) / 2
+    camera_center = constants.WIDTH/2
+    return (match_center-camera_center) * constants.DEGREES_PER_PIXEL
+
 def write_angles(frame, matches):
     for s1, s2 in matches:
-        match_center = (s1[3][0] + s2[0][0]) / 2
-        camera_center = constants.WIDTH/2
-        angle_to_match = (match_center-camera_center) * constants.DEGREES_PER_PIXEL
+        angle_to_match = get_angle_to_match((s1, s2))
         cv2.putText(frame, "%.2f"%angle_to_match, (int(match_center), s1[3][1]), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
 
 def find_goals(frame, rects):
@@ -90,6 +89,7 @@ def find_goals(frame, rects):
     matched = {}
     rects = [sorted(rect, key=lambda x: x[0]) for rect in rects]
     rects = sorted(rects,  key=lambda x: x[0][0])
+    
     for s1 in rects:
         # s1 = sorted(r1, key=lambda x: x[0])
         a1 = get_angle(s1)
@@ -110,7 +110,6 @@ def find_goals(frame, rects):
                             cv2.line(frame, tuple(s1[3]), tuple(s2[0]), (0, 255, 0), 3)
     return matches
             # print(angle, angle+90%360)
-    return frame
 
 def get_angle(rect):
     p1, p2 = rect[0], rect[1]
