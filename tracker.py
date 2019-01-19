@@ -49,7 +49,8 @@ def detect_goals(frame):
             matches = find_goals(frame, rects)
             if matches is not None:
                 write_angles(frame, matches)
-                for match, i in enumerate(matches):
+                for i, match in enumerate(matches):
+                    print(match, i)
                     Table.putNumber("goal:%d"%i, get_angle_to_match(match))
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
 
