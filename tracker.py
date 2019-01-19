@@ -49,7 +49,7 @@ def detect_goals(frame):
             matches = find_goals(frame, rects)
             if matches is not None:
                 write_angles(frame, matches)    
-                match_angles = sorted([(get_angle_to_match(match), match) for match in matches],  key=lambda x: x[0])
+                match_angles = sorted([(get_angle_to_match(match), match) for match in matches],  key=lambda x: abs(x[0]))
                 for i, match_angle in enumerate(match_angles):
                     # print(match_angle, i)
                     Table.putNumber("goal:%d"%i, match_angle[0])
