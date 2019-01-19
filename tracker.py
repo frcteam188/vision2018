@@ -48,10 +48,12 @@ def detect_goals(frame):
             rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > 150]
             matches = find_goals(frame, rects)
             if matches is not None:
-                write_angles(frame, matches)
-                for i, match in enumerate(matches):
-                    print(match, i)
-                    Table.putNumber("goal:%d"%i, get_angle_to_match(match))
+                write_angles(frame, matches)    
+                match_angles = sorted([(get_angle_to_match(match), match) for match in matches],  key=lambda x: x[0])
+                for i, match_angle in enumerate(match_angles):
+                    # print(match_angle, i)
+                    Table.putNumber("goal:%d"%i, match_angle[0])
+                Table.putNumber("goal:closest", match_angles[0][0])
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
 
            
@@ -59,7 +61,7 @@ def detect_goals(frame):
         except IndexError:
             Table.putBoolean("ContoursFound", False)
         # print_latency(before)
-        if camera is not None:
+        if camera is not None:  
             cv2.imshow("Frame", frame)
         return frame
 
