@@ -1,11 +1,11 @@
 import numpy as np
 
 #IPs and Default Table
-ServerIP = "localhost" #the roboRIO
+ServerIP = "10.1.88.101" #the roboRIO
 MainTable = "SmartDashboard" #reduces java footprint since SmartDashboard
 								#is already initialized
 CubeStream = 0 #Bottom Camera
-TapeStream = 'http://localhost:1182/stream.mjpg' #Top Camera
+# TapeStream = 'http://localhost:1182/stream.mjpg' #Top Camera
 
 MaxFPS = 8
 
