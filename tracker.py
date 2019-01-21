@@ -23,7 +23,7 @@ def trackCube():
         if key ==ord("q"):
             break
 
-def detect_goals(frame):
+def detect_goals(frame, show_frame=False):
         before = time.time()
         # print(frame.shape)
         frame = cv2.resize(frame, (constants.WIDTH, constants.HEIGHT))
@@ -61,8 +61,9 @@ def detect_goals(frame):
         except IndexError:
             Table.putBoolean("ContoursFound", False)
         # print_latency(before)
-        if camera is not None:  
+        if camera is not None or show_frame:  
             cv2.imshow("Frame", frame)
+            key = cv2.waitKey(1) & 0xFF
         return frame
 
 def lower_exposure(image):
