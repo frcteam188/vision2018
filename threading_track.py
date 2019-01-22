@@ -22,7 +22,7 @@ vs = WebcamVideoStream(src=0).start()
 fps = FPS().start()
  
 # loop over some frames...this time using the threaded stream
-while fps._numFrames < args["num_frames"]:
+while True:
 	# grab the frame from the threaded video stream and resize it
 	# to have a maximum width of 400 pixels
 	frame = vs.read()
