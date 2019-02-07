@@ -13,7 +13,6 @@ Table = NetworkTables.getTable(constants.MainTable)
 
 camera = None
 
-
 def trackCube():
     
     while(True):
@@ -25,23 +24,20 @@ def trackCube():
 
 def detect_goals(frame, show_frame=False):
         before = time.time()
-        # print(frame.shape)
         frame = cv2.resize(frame, (constants.WIDTH, constants.HEIGHT))
         # cv2.imshow(frame)
+
         #sharpen and refine image
         hsv = frame
-        
         hsv = cv2.erode(hsv, None, iterations=2)
         hsv = cv2.dilate(hsv, None, iterations=2)
         hsv = cv2.GaussianBlur(hsv, (3, 3), 1)
-
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        # cv2.imshow('BLUR', hsv)
 
         #filter anything based on color
         green_range = cv2.inRange(hsv, constants.green_lower, constants.green_upper)
         # cv2.imshow('FILTER', green_range)
-        # print_latency(before)
+        
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             
@@ -51,9 +47,9 @@ def detect_goals(frame, show_frame=False):
                 write_angles(frame, matches)    
                 match_angles = sorted([(get_angle_to_match(match), match) for match in matches],  key=lambda x: abs(x[0]))
                 for i, match_angle in enumerate(match_angles):
-                    # print(match_angle, i)
                     Table.putNumber("goal:%d"%i, match_angle[0])
                 Table.putNumber("goal:closest", match_angles[0][0])
+                
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
 
            
