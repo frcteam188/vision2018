@@ -12,6 +12,7 @@ NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
 camera = None
+cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
 
 def trackCube():
     
@@ -49,7 +50,7 @@ def detect_goals(frame, show_frame=False):
                 for i, match_angle in enumerate(match_angles):
                     Table.putNumber("goal:%d"%i, match_angle[0])
                 Table.putNumber("goal:closest", match_angles[0][0])
-                
+
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
 
            
