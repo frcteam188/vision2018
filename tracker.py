@@ -12,7 +12,10 @@ NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
 camera = None
-cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
+try:
+    cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
+except:
+    print("could not connect to X Server")
 
 def trackCube():
     
@@ -58,8 +61,11 @@ def detect_goals(frame, show_frame=False):
         except IndexError:
             Table.putBoolean("ContoursFound", False)
         # print_latency(before)
-        if camera is not None or show_frame:  
-            cv2.imshow("Frame", frame)
+        if camera is not None or show_frame:
+            try:  
+                cv2.imshow("Frame", frame)
+            except:
+                return frame
             key = cv2.waitKey(1) & 0xFF
         return frame
 
