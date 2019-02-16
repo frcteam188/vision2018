@@ -12,7 +12,6 @@ NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
 camera = None
-cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
 
 def trackCube():
     
@@ -86,13 +85,11 @@ def find_goals(frame, rects):
     rects = sorted(rects,  key=lambda x: x[0][0])
     
     for s1 in rects:
-        # s1 = sorted(r1, key=lambda x: x[0])
         a1 = get_angle(s1)
         for s2 in rects:
             if s2 is not s1:
-                # s2 = sorted(r2, key=lambda x: x[0])
                 a2 = get_angle(s2)
-                # print('here')
+
                 # check s1 to the left of s2, and both at same height
                 if (s1[0][0] < s2[0][0] and abs(s1[3][1] - s2[0][1]) < 50):
                     # check a1 reflects a2 along the vertical (within a threshold)
@@ -111,6 +108,12 @@ def get_angle(rect):
     adjacent = p2[1] - p1[1]
     angle = (math.atan(opposite/adjacent) * 180)/math.pi
     return angle
+
+# def get_goal_normal(rect, angle_to_goal):
+#     p1, p2 = rect[0], rect[1]
+#     d = p2[0] - p1[0]
+#     r = 
+
 
 def print_latency(before):
     latency = time.time() - before
