@@ -12,10 +12,7 @@ NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
 camera = None
-try:
-    cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
-except:
-    print("could not connect to X Server")
+cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
 
 def trackCube():
     
@@ -44,7 +41,7 @@ def detect_goals(frame, show_frame=False):
         
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            
+
             rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > 150]
             matches = find_goals(frame, rects)
             if matches is not None:
@@ -55,12 +52,9 @@ def detect_goals(frame, show_frame=False):
                 Table.putNumber("goal:closest", match_angles[0][0])
 
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
-
-           
-
         except IndexError:
             Table.putBoolean("ContoursFound", False)
-        # print_latency(before)
+             
         if camera is not None or show_frame:
             try:  
                 cv2.imshow("Frame", frame)
@@ -68,18 +62,6 @@ def detect_goals(frame, show_frame=False):
                 return frame
             key = cv2.waitKey(1) & 0xFF
         return frame
-
-def lower_exposure(image):
-   
-    if image is None:
-        return
-    new_image = np.zeros(image.shape, image.dtype)
-    alpha = 1.0 # Simple contrast control
-    beta = 0    # Simple brightness control
-
-
-    new_image = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
-    return new_image
 
 def get_angle_to_match(match):
     s1, s2 = match
@@ -122,7 +104,6 @@ def find_goals(frame, rects):
                             matches.append(match)
                             cv2.line(frame, tuple(s1[3]), tuple(s2[0]), (0, 255, 0), 3)
     return matches
-            # print(angle, angle+90%360)
 
 def get_angle(rect):
     p1, p2 = rect[0], rect[1]
@@ -139,5 +120,3 @@ def print_latency(before):
 if __name__ == '__main__':
     camera = cv2.VideoCapture(0)
     trackCube()
-    # detect_goals(cv2.imread('vision_sample.png'))
-    # cv2.waitKey(0)

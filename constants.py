@@ -11,12 +11,10 @@ MaxFPS = 8
 
 CAMERA_WIDTH, CAMERA_HEIGHT = 1280, 720
 WIDTH, HEIGHT = 640, 360
-CAMERA_FOV = 50 # degrees
+CAMERA_FOV = 53 # degrees
 DEGREES_PER_PIXEL = CAMERA_FOV/WIDTH
 
 #color ranges to filter
-#peg color range
-
 green_lower = np.array([50, 100, 50],np.uint8)
 green_upper = np.array([100, 255, 255],np.uint8)
 
