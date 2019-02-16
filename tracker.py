@@ -12,6 +12,9 @@ NetworkTables.initialize(server=constants.ServerIP)
 Table = NetworkTables.getTable(constants.MainTable)
 
 camera = None
+window_name = "Frame"
+cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 def trackCube():
     
@@ -56,7 +59,7 @@ def detect_goals(frame, show_frame=False):
              
         if camera is not None or show_frame:
             try:  
-                cv2.imshow("Frame", frame)
+                cv2.imshow(window_name, frame)
             except:
                 return frame
             key = cv2.waitKey(1) & 0xFF
