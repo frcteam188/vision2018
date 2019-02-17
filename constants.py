@@ -15,7 +15,7 @@ CAMERA_FOV = 53 # degrees
 DEGREES_PER_PIXEL = CAMERA_FOV/WIDTH
 
 #color ranges to filter
-green_lower = np.array([50, 100, 50],np.uint8)
+green_lower = np.array([50, 50, 50],np.uint8)
 green_upper = np.array([100, 255, 255],np.uint8)
 
 ANGLE_THRESHOLD = 20 #degrees
