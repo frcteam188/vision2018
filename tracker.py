@@ -55,6 +55,7 @@ def detect_goals(frame, show_frame=False):
                 match_angles = sorted([(get_angle_to_match(match), match) for match in matches],  key=lambda x: abs(x[0]))
                 Table.putNumberArray("goal:angles", match_angles[:, 0])
                 Table.putNumberArray("goal:heights", [get_match_height(match) for match in match_angles[:,1]])
+                Table.putNumberArray("goal:widths", [get_match_width(match) for match in match_angles[:,1]])
                 Table.putNumber("goal:closest", match_angles[0][0])
                 
 
@@ -72,6 +73,9 @@ def detect_goals(frame, show_frame=False):
                 return frame
             key = cv2.waitKey(1) & 0xFF
         return frame
+def get_match_width(match):
+    s1, s2 = match
+    return abs(s1[3][1] - s2[0][1])
 def get_match_height(match):
     s1, s2 = match
     match_height = (s1[3][1] + s2[0][1]) /2
