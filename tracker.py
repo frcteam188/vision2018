@@ -38,7 +38,10 @@ def detect_goals(frame, show_frame=False):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         #filter anything based on color
-        green_range = cv2.inRange(hsv, constants.green_lower, constants.green_upper)
+        # green_range = cv2.inRange(hsv, constants.green_lower, constants.green_upper)
+        green_lower = Table.getNumberArray('hsv:lower', constants.green_lower)
+        green_upper = Table.getNumberArray('hsv:upper', constants.green_upper)
+        green_range = cv2.inRange(hsv, green_lower, green_upper)
         # cv2.imshow('FILTER', green_range)
         
         try:
@@ -52,6 +55,7 @@ def detect_goals(frame, show_frame=False):
                 for i, match_angle in enumerate(match_angles):
                     Table.putNumber("goal:%d"%i, match_angle[0])
                 Table.putNumber("goal:closest", match_angles[0][0])
+                
 
             cv2.drawContours(frame,rects,-1,(0,0,255),2)
         except IndexError:
