@@ -43,7 +43,7 @@ def detect_goals(frame, show_frame=False):
         green_upper = Table.getNumberArray('hsv:upper', constants.green_upper)
         # print(green_lower, green_upper)
         green_range = cv2.inRange(hsv, green_lower, green_upper)
-        cv2.imshow('FILTER', green_range)
+        # cv2.imshow('FILTER', green_range)
         
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
