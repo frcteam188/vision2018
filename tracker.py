@@ -53,9 +53,8 @@ def detect_goals(frame, show_frame=False):
             if matches is not None:
                 write_angles(frame, matches)    
                 match_angles = sorted([(get_angle_to_match(match), match) for match in matches],  key=lambda x: abs(x[0]))
-                for i, match_angle in enumerate(match_angles):
-                    Table.putNumber("goal:%d"%i, match_angle[0])
-                    Table.putNumber("goal:%d:height"%i, get_match_height(match_angle[1]))
+                Table.putNumberArray("goal:angles", match_angles[:, 0])
+                Table.putNumberArray("goal:heights", [get_match_height(match) for match in match_angles[:,1]])
                 Table.putNumber("goal:closest", match_angles[0][0])
                 
 
