@@ -1,7 +1,7 @@
 import numpy as np
 
 #IPs and Default Table
-ServerIP = "10.1.88.101" #the roboRIO
+ServerIP = "10.1.88.2" #the roboRIO
 MainTable = "SmartDashboard" #reduces java footprint since SmartDashboard
 								#is already initialized
 CubeStream = 0 #Bottom Camera
