@@ -47,8 +47,8 @@ def detect_goals(frame, show_frame=False):
         
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > 150]
+            min_size = Table.getNumber('contour:min', constants.CONTOUR_MIN)
+            rects = [np.int0(cv2.boxPoints(cv2.minAreaRect(contour))) for contour in contours if cv2.contourArea(contour) > min_size]
             matches = find_goals(frame, rects)
             if matches is not None:
                 write_angles(frame, matches)    
@@ -67,7 +67,7 @@ def detect_goals(frame, show_frame=False):
                 if Table.getBoolean('hsv:toggle', False):
                     cv2.imshow(window_name, green_range)
                 else:
-                    cv2.imshow(window_name, Frame)    
+                    cv2.imshow(window_name, frame)    
             except:
                 return frame
             key = cv2.waitKey(1) & 0xFF

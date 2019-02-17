@@ -9,6 +9,8 @@ CubeStream = 0 #Bottom Camera
 
 MaxFPS = 8
 
+CONTOUR_MIN = 100
+
 CAMERA_WIDTH, CAMERA_HEIGHT = 1280, 720
 WIDTH, HEIGHT = 640, 360
 CAMERA_FOV = 53 # degrees
