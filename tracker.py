@@ -41,9 +41,9 @@ def detect_goals(frame, show_frame=False):
         # green_range = cv2.inRange(hsv, constants.green_lower, constants.green_upper)
         green_lower = Table.getNumberArray('hsv:lower', constants.green_lower)
         green_upper = Table.getNumberArray('hsv:upper', constants.green_upper)
-        print(green_lower, green_upper)
+        # print(green_lower, green_upper)
         green_range = cv2.inRange(hsv, green_lower, green_upper)
-        # cv2.imshow('FILTER', green_range)
+        cv2.imshow('FILTER', green_range)
         
         try:
             b, contours, _ = cv2.findContours(green_range, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -64,7 +64,10 @@ def detect_goals(frame, show_frame=False):
              
         if camera is not None or show_frame:
             try:  
-                cv2.imshow(window_name, frame)
+                if Table.getBoolean('hsv:toggle', False):
+                    cv2.imshow(window_name, green_range)
+                else:
+                    cv2.imshow(window_name, Frame)    
             except:
                 return frame
             key = cv2.waitKey(1) & 0xFF

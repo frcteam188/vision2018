@@ -2,5 +2,5 @@
 
 source /usr/local/bin/virtualenvwrapper.sh
 workon cv
-v4l2-ctl -c exposure_auto=1 -c exposure_absolute=5
+v4l2-ctl -c exposure_auto=1 -c exposure_absolute=10
 python /home/pi/Dev/vision2019/threading_track.py -d 1
